@@ -4,8 +4,6 @@
 #define LED 22
 #define BOT 15
 
-bool flag = 0;
-
 int main()
 {
     //Configuración
@@ -17,18 +15,20 @@ int main()
     gpio_pull_up(BOT);
 
     //Condicional
+
+    bool flag = 0;
     
     while(true){
         if((flag == 0) && (gpio_get(BOT)== 0)){
-            gpio_xor_mask(1 << LED);
-            flag = 1;
+            sleep_ms(20);
+            if(gpio_get(BOT) == 0){
+                gpio_xor_mask(1 << LED);
+                flag = 1;
+            }
         }
 
-        if((flag == 1) && (gpio_get(BOT)== 1)){
+        if(gpio_get(BOT)== 1){
             flag = 0;
         }
-
-
-    }
-   
+    }  
 }
