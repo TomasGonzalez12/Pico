@@ -12,6 +12,6 @@ int main()
 
     while (true) {
         gpio_xor_mask(1 << LED_PIN);
-        sleep_ms(333);
+        sleep_ms(167);
     }
 }
