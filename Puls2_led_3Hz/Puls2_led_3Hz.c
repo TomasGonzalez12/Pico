@@ -15,7 +15,7 @@ typedef enum estado{
 //Estado inicial
 estado estado_actual = suelto_off;
 
-void ledParpadeo(uint gpio, int t_ms, estado estado);
+void ledParpadeo(uint gpio, int t_ms);
 
 int main(){
     //Inicialización
@@ -54,7 +54,7 @@ int main(){
         case presionado_parp:
             if(gpio_get(BT) == 0)
             {
-                ledParpadeo(LED, 167, presionado_parp);
+                ledParpadeo(LED, 167);
                 estado_actual = presionado_parp;
             }
             else if (gpio_get(BT) == 1)
@@ -69,7 +69,7 @@ int main(){
         case suelto_parp:
             if(gpio_get(BT) == 1)
             {
-                ledParpadeo(LED, 167, suelto_parp);
+                ledParpadeo(LED, 167);
                 estado_actual = suelto_parp;
             }
             else if (gpio_get(BT) == 0)
@@ -106,11 +106,12 @@ int main(){
 }
 
 
-void ledParpadeo(uint gpio, int t_ms, estado estado){
+void ledParpadeo(uint gpio, int t_ms){
     int flag = 1;
-    while(((estado == presionado_parp) || (estado = suelto_parp)) && (flag ==1)){
+    while(flag == 1){
         gpio_xor_mask(1 << LED);
         sleep_ms(167);
         flag = 0;
     }   
 }
+
