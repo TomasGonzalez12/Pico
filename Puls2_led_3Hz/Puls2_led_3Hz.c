@@ -99,6 +99,7 @@ int main(){
         break;
 
         default:
+        default:
         break;
      }
 }
