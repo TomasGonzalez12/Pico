@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(Puls2_led_3Hz Puls2_led_3Hz.c )
+add_executable(Puls2_led_3Hz main.c systick.c )
 
 pico_set_program_name(Puls2_led_3Hz "Puls2_led_3Hz")
 pico_set_program_version(Puls2_led_3Hz "0.1")
