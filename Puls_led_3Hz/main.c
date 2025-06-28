@@ -120,10 +120,7 @@ int main(){
     
 }
 
-/* Callback de atención de interrupción */
 void puls_callback(uint gpio, uint32_t event_mask) {
-    if ((gpio == BT) && (event_mask == GPIO_IRQ_EDGE_FALL || GPIO_IRQ_EDGE_RISE)) {
-        demora = get_systick() + REBOTE;
-    }
+    demora = get_systick() + REBOTE;
 }
 
