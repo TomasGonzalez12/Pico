@@ -5,13 +5,6 @@
 #include "hardware.h"
 #include "funciones.h"
 
-
-//Función antirebote del pulsador
-uint32_t demora = 0;
-void puls_callback(uint gpio, uint32_t event_mask) {
-    demora = get_systick() + REBOTE_PULS;
-} 
-
 //Inicializar los pines
 void init_hardware(){
     stdio_init_all();
@@ -38,6 +31,12 @@ void init_hardware(){
 
 }
 
+//Función antirebote del pulsador
+volatile uint32_t demora = 0;
+void puls_callback(uint gpio, uint32_t event_mask) {
+    demora = get_systick() + REBOTE_PULS;
+} 
+
 // Funciones de la bomba
 void bomba_off(){
     gpio_put(CTRL_BOMBA, 1);
@@ -49,43 +48,46 @@ void bomba_on(){
     gpio_put(LEDV_PIN, 1);
 }
 
+//Inicializar los valores de nivel
+void init_adc(uint32_t* tanque, uint32_t* cisterna){
+    adc_select_input(0);
+    *tanque = adc_read();
+    adc_select_input(1);
+    *cisterna = adc_read();
+}
+
 //Toman el valor de 10 muestras del adc y saca un promedio 
-uint32_t tiempo = 0;
-uint32_t acum_tanque = 0 , cont_tanque = 0, prom_tanque = 0;
-uint32_t acum_cis = 0, cont_cis = 0, prom_cis = 0;
+static uint32_t tiempo_tanque = 0;
+static uint32_t tiempo_cis = 0;
+static uint32_t acum_tanque = 0 , cont_tanque = 0, prom_tanque = 0;
+static uint32_t acum_cis = 0, cont_cis = 0, prom_cis = 0;
 
 void valor_adc_tanque(uint32_t* tanque) {
-    tiempo = get_systick();
-    adc_select_input(0);   //ADC del tanque
-    if (tiempo >= get_systick()) {
-            tiempo += delay_ms;
-             acum_tanque += adc_read();
-             cont_tanque++;
-            if (cont_tanque >= MUESTRAS) {
-                prom_tanque = acum_tanque / cont_tanque;
-                *tanque = prom_tanque;
-                acum_tanque = 0;
-                cont_tanque = 0;
-                tiempo = 0;
-            }
-    } 
-}     
-    
-void valor_adc_cisterna(uint32_t* cisterna){ 
-    tiempo = get_systick();
-    adc_select_input(1);   //ADC del cisterna
-    if (tiempo >= get_systick()) {
-            tiempo += delay_ms;
-             acum_cis += adc_read();
-             cont_cis++;
-            if (cont_cis >= MUESTRAS) {
-                prom_cis = acum_cis / cont_cis;
-                *cisterna = prom_cis;
-                acum_cis = 0;
-                cont_cis = 0;
-                tiempo = 0;
-            }
-    } 
+    if (get_systick() >= tiempo_tanque) {
+        tiempo_tanque = get_systick() + delay_ms;
+        adc_select_input(0);
+        acum_tanque += adc_read();
+        cont_tanque++;
+        if (cont_tanque >= MUESTRAS) {
+            *tanque = acum_tanque / cont_tanque;
+            acum_tanque = 0;
+            cont_tanque = 0;
+        }
+    }
+}
+
+void valor_adc_cisterna(uint32_t* cisterna) {
+    if (get_systick() >= tiempo_cis) {
+        tiempo_cis = get_systick() + delay_ms;
+        adc_select_input(1);
+        acum_cis += adc_read();
+        cont_cis++;
+        if (cont_cis >= MUESTRAS) {
+            *cisterna = acum_cis / cont_cis;
+            acum_cis = 0;
+            cont_cis = 0;
+        }
+    }
 }
 
 // Led Amarillo encendido/apagado
