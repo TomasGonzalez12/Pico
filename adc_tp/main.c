@@ -9,15 +9,16 @@ typedef enum estado{
     tanque_lleno,
     tanque_medio,
     tanque_vacio,
-    cisterna_llena
 }estado;
 
 //Antirebote del pulsador
 volatile uint32_t demora = 0;
 void puls_callback(uint gpio, uint32_t event_mask);
 
+// Prototipo de las funciones
 void bomba_off();
 void bomba_on();
+void leer_adc(uint32_t* cisterna, uint32_t* tanque);
 
 int main()
 {
@@ -44,11 +45,35 @@ int main()
     //Configuración de función callback del pulsador
     gpio_set_irq_enabled_with_callback(PULS_PIN, GPIO_IRQ_EDGE_FALL, true, puls_callback);
 
-    uint32_t estado_tanque = 0, estado_cisterna = 0;
+    //Configuración del estado inicial del sistema
+    uint32_t nivel_tanque = 0, nivel_cisterna = 0;
+    estado estado_actual;
     
-    adc_select_input(FLOT_BAJO_PIN);
-    estado_cisterna = adc_read();
-
+    if((nivel_cisterna >= level_bomba_on) && (nivel_tanque <= nivel_min_sup)){
+        estado_actual = tanque_vacio;
+    }
+    else if ((nivel_cisterna <= nivel_min_inf) &&  (nivel_tanque >= nivel_max_sup)){
+        estado_actual = tanque_lleno;
+    }
+    else{
+        estado_actual = tanque_medio;
+    }
+    
+    //Maquina de estados
+    while(1){
+        switch (estado_actual)
+        {
+        case tanque_vacio:
+            leer_adc(&nivel_cisterna, &nivel_tanque);
+            if((nivel_cisterna >= level_bomba_on) && (nivel_tanque <= nivel_min_sup)){
+                bomba_on();
+            }
+            break;
+        
+        default:
+            break;
+        }
+    }
 
 }
 
@@ -66,4 +91,11 @@ void bomba_off(){
 void bomba_on(){
     gpio_put(CTRL_BOMBA, 0);
     gpio_put(LEDV_PIN, 1);
+}
+
+void leer_adc(uint32_t* cisterna, uint32_t* tanque) {
+    adc_select_input(FLOT_BAJO_PIN); 
+    *cisterna = adc_read();
+    adc_select_input(FLOT_ALTO_PIN);
+    *tanque = adc_read();
 }
