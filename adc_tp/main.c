@@ -3,6 +3,7 @@
 #include "hardware/adc.h"
 #include "systick.h"
 #include "hardware.h"
+#include "funciones.h"
 
 //Estados 
 typedef enum estado{
@@ -10,129 +11,70 @@ typedef enum estado{
     llenar_cisterna
 }estado;
 
-//Antirebote del pulsador
-volatile uint32_t demora = 0;
-void puls_callback(uint gpio, uint32_t event_mask);
-
-// Prototipo de las funciones
-void bomba_off();
-void bomba_on();
-void leer_adc(uint32_t* cisterna, uint32_t* tanque);
-void led_amarillo(uint32_t* tanque);
-void led_rojo(uint32_t* cisterna);
 
 int main()
 {
     //Inicializaciones
-    stdio_init_all();
-    init_systick();
-
-    gpio_init_mask((1 << LEDR_PIN) | (1 << LEDA_PIN) | (1 << LEDV_PIN));
-    gpio_set_dir_out_masked((1 << LEDR_PIN) | (1 << LEDA_PIN) | (1 << LEDV_PIN));
-    gpio_clr_mask((1 << LEDR_PIN) | (1 << LEDA_PIN) | (1 << LEDV_PIN));
-
-    gpio_init(PULS_PIN);
-    gpio_set_dir(PULS_PIN, GPIO_IN);
-    gpio_pull_up(PULS_PIN);
-
-    gpio_init(CTRL_BOMBA);
-    gpio_set_dir(CTRL_BOMBA, GPIO_OUT);
-    gpio_put(CTRL_BOMBA, 0);
-
-    adc_init();
-    adc_gpio_init(FLOT_BAJO_PIN);
-    adc_gpio_init(FLOT_ALTO_PIN);
-
-    //Configuración de función callback del pulsador
-    gpio_set_irq_enabled_with_callback(PULS_PIN, GPIO_IRQ_EDGE_FALL, true, puls_callback);
+    init_hardware();
 
     //Configuración del estado inicial del sistema
     uint32_t nivel_tanque = 0, nivel_cisterna = 0;
     estado estado_actual;
 
-    leer_adc(&nivel_cisterna, &nivel_tanque);
+    valor_adc_tanque(&nivel_tanque);
+    valor_adc_cisterna(&nivel_cisterna);
     
     if((nivel_cisterna >= level_bomba_on) && (nivel_tanque <= nivel_min_sup)){
         estado_actual = llenar_tanque;
     }
-    else if ((nivel_cisterna <= nivel_min_inf) &&  (nivel_tanque >= nivel_max_sup)){
+    else if ((nivel_cisterna <= level_bomba_on) &&  (nivel_tanque >= nivel_max_sup)){
         estado_actual = llenar_cisterna;
     }
-    
+    else if(nivel_cisterna >= level_bomba_on && (gpio_get(LEDR_PIN) == 0) && nivel_tanque <=nivel_min_sup ){   //Acá tomo el estado del boton para que se habilite la cisterna cuando 
+        estado_actual = llenar_tanque;                                                                         //ya este bien cargado y no se prenda y apague cerca del valor de level_bomba_on
+    }
+
     //Maquina de estados
     while(1){
         switch (estado_actual)
         {
         case llenar_tanque:
-            leer_adc(&nivel_cisterna, &nivel_tanque);
+            valor_adc_tanque(&nivel_tanque);                                              
+            valor_adc_cisterna(&nivel_cisterna);
+
             if((nivel_cisterna >= level_bomba_on) && (nivel_tanque <= nivel_min_sup)){
                 bomba_on();//Bomba y LedV ON
                 led_amarillo(&nivel_tanque);
                 led_rojo(&nivel_cisterna);
                 estado_actual = llenar_tanque;
             }
-            else if(nivel_cisterna <= nivel_min_inf && nivel_tanque >= nivel_max_sup){
+            else if(nivel_cisterna <= level_bomba_on && nivel_tanque >= nivel_max_sup){
                 estado_actual = llenar_cisterna;
             }
         break;
                  
         case llenar_cisterna:
-            leer_adc(&nivel_cisterna, &nivel_tanque);
-            if(nivel_cisterna <= nivel_min_inf && nivel_tanque >= nivel_max_sup){
+            valor_adc_tanque(&nivel_tanque);
+            valor_adc_cisterna(&nivel_cisterna);
+
+            if(nivel_cisterna < level_bomba_on && nivel_tanque >= nivel_max_sup){
                 bomba_off();
                 led_amarillo(&nivel_tanque);
                 led_rojo(&nivel_cisterna);
                 estado_actual = llenar_cisterna;
             }
-        break;   
-        
-        default:
-            break;
+            else if (nivel_cisterna >= level_bomba_on && (gpio_get(LEDR_PIN) == 0) && nivel_tanque <=nivel_min_sup )
+            {
+                estado_actual  = llenar_tanque;
+            }
+            
+               
+        default:                                                                //Si cae en un caso que se escapa de los planteado, se prenden todos
+            bomba_off;                                                          //los leds y se apaga la bomba por precaución.
+            gpio_set_mask((1 << LEDR_PIN) | (1 << LEDA_PIN) | (1 << LEDV_PIN));
+        break;
         }
     }
 
 }
 
-//Función antirebote del pulsador
-void puls_callback(uint gpio, uint32_t event_mask) {
-    demora = get_systick() + REBOTE_PULS;
-} 
-
-// Funciones de la bomba
-void bomba_off(){
-    gpio_put(CTRL_BOMBA, 1);
-    gpio_put(LEDV_PIN, 0);
-}
-
-void bomba_on(){
-    gpio_put(CTRL_BOMBA, 0);
-    gpio_put(LEDV_PIN, 1);
-}
-
-//Funcion leer valor de ambos ADC
-void leer_adc(uint32_t* cisterna, uint32_t* tanque) {
-    adc_select_input(1); //Cisterna 
-    *cisterna = adc_read();
-    adc_select_input(0); //Tanque
-    *tanque = adc_read();
-}
-
-// Led Amarillo encendido/apagado
-void led_amarillo(uint32_t* tanque){
-    if(*tanque < level_ledA_on){
-        gpio_put(LEDA_PIN, 1);
-    }
-    else if(*tanque > level_ledA_off){
-        gpio_put(LEDA_PIN,0);
-    }
-}
-
-// Led Rojo encendido/apagado
-void led_rojo(uint32_t* cisterna){
-    if(*cisterna < level_ledR_on){
-        gpio_put(LEDR_PIN, 1);
-    }
-    else if(*cisterna > level_ledR_off){
-        gpio_put(LEDR_PIN,0);
-    }
-}

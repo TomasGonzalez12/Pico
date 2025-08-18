@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(adc_tp main.c systick.c )
+add_executable(adc_tp main.c systick.c funciones.c)
 
 pico_set_program_name(adc_tp "adc_tp")
 pico_set_program_version(adc_tp "0.1")

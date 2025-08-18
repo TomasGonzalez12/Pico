@@ -7,10 +7,12 @@
 #define LEDA_PIN 12
 #define LEDV_PIN 13
 
-#define FLOT_BAJO_PIN 27 // ADC1 Cisterna
-#define FLOT_ALTO_PIN 26 //ADC0 Tanque
 #define PULS_PIN 18
 #define CTRL_BOMBA 16
+#define FLOT_BAJO_PIN 27 // ADC1 Cisterna
+#define FLOT_ALTO_PIN 26 //ADC0 Tanque
+#define MUESTRAS 10
+#define delay_ms 60
 
 // Tanque
 #define nivel_max_sup 1740
