@@ -7,8 +7,8 @@
 #define LEDA_PIN 12
 #define LEDV_PIN 13
 
-#define FLOT_BAJO_PIN 27
-#define FLOT_ALTO_PIN 26
+#define FLOT_BAJO_PIN 27 // ADC1 Cisterna
+#define FLOT_ALTO_PIN 26 //ADC0 Tanque
 #define PULS_PIN 18
 #define CTRL_BOMBA 16
 
@@ -16,6 +16,7 @@
 #define nivel_max_sup 1740
 #define nivel_min_sup 465
 #define cap_sup (nivel_max_sup - nivel_min_sup)
+#define nivel_medio_sup (nivel_min_sup + cap_sup/2)
 #define level_ledA_on (nivel_min_sup + cap_sup/4)
 #define level_ledA_off (nivel_min_sup + cap_sup * 3/4)
 

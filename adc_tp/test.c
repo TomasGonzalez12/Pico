@@ -2,17 +2,44 @@
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
 #include "systick.h"
-#include "hardware.h"
+
+#define REBOTE_PULS 30
+
+#define LEDR_PIN 11
+#define LEDA_PIN 12
+#define LEDV_PIN 13
+
+#define FLOT_BAJO_PIN 27 // ADC1 Cisterna
+#define FLOT_ALTO_PIN 26 //ADC0 Tanque
+#define PULS_PIN 18
+#define CTRL_BOMBA 16
+
+// Tanque
+#define nivel_max_sup 1740
+#define nivel_min_sup 465
+#define cap_sup (nivel_max_sup - nivel_min_sup)
+#define nivel_medio_sup (nivel_min_sup + cap_sup/2)
+#define level_ledA_on (nivel_min_sup + cap_sup/4)
+#define level_ledA_off (nivel_min_sup + cap_sup * 3/4)
+
+// Cisterna
+#define nivel_max_inf 2040
+#define nivel_min_inf 707
+#define cap_inf (nivel_max_inf - nivel_min_inf)
+#define level_ledR_on (nivel_min_inf + cap_inf/4)
+#define level_ledR_off (nivel_min_inf + cap_inf * 3/4)
+#define level_bomba_on (nivel_min_inf + cap_inf/2)
 
 //Estados 
 typedef enum estado{
-    llenar_tanque,
-    llenar_cisterna
+    tanque_lleno,
+    tanque_medio,
+    tanque_vacio,
 }estado;
 
 //Antirebote del pulsador
 volatile uint32_t demora = 0;
-void puls_callback(uint gpio, uint32_t event_mask);
+// void puls_callback(uint gpio, uint32_t event_mask);
 
 // Prototipo de las funciones
 void bomba_off();
@@ -44,7 +71,7 @@ int main()
     adc_gpio_init(FLOT_ALTO_PIN);
 
     //Configuración de función callback del pulsador
-    gpio_set_irq_enabled_with_callback(PULS_PIN, GPIO_IRQ_EDGE_FALL, true, puls_callback);
+    //gpio_set_irq_enabled_with_callback(PULS_PIN, GPIO_IRQ_EDGE_FALL, true, puls_callback);
 
     //Configuración del estado inicial del sistema
     uint32_t nivel_tanque = 0, nivel_cisterna = 0;
@@ -53,38 +80,51 @@ int main()
     leer_adc(&nivel_cisterna, &nivel_tanque);
     
     if((nivel_cisterna >= level_bomba_on) && (nivel_tanque <= nivel_min_sup)){
-        estado_actual = llenar_tanque;
+        estado_actual = tanque_vacio;
     }
     else if ((nivel_cisterna <= nivel_min_inf) &&  (nivel_tanque >= nivel_max_sup)){
-        estado_actual = llenar_cisterna;
+        estado_actual = tanque_lleno;
+    }
+    else{
+        estado_actual = tanque_medio;
     }
     
     //Maquina de estados
     while(1){
         switch (estado_actual)
         {
-        case llenar_tanque:
+        case tanque_vacio:
             leer_adc(&nivel_cisterna, &nivel_tanque);
             if((nivel_cisterna >= level_bomba_on) && (nivel_tanque <= nivel_min_sup)){
                 bomba_on();//Bomba y LedV ON
                 led_amarillo(&nivel_tanque);
                 led_rojo(&nivel_cisterna);
-                estado_actual = llenar_tanque;
+                estado_actual = tanque_vacio;
             }
             else if(nivel_cisterna <= nivel_min_inf && nivel_tanque >= nivel_max_sup){
-                estado_actual = llenar_cisterna;
+                estado_actual = tanque_lleno;
             }
         break;
                  
-        case llenar_cisterna:
+        case tanque_lleno:
             leer_adc(&nivel_cisterna, &nivel_tanque);
             if(nivel_cisterna <= nivel_min_inf && nivel_tanque >= nivel_max_sup){
                 bomba_off();
                 led_amarillo(&nivel_tanque);
                 led_rojo(&nivel_cisterna);
-                estado_actual = llenar_cisterna;
+                estado_actual = tanque_lleno;
             }
-        break;   
+        break;
+
+        case tanque_medio:
+            leer_adc(&nivel_cisterna, &nivel_tanque);
+            if((gpio_get(LEDA_PIN) != 0) && nivel_cisterna >= level_bomba_on && nivel_tanque >= nivel_medio_sup){
+                bomba_off();
+                led_rojo(&nivel_cisterna);
+                estado_actual = tanque_medio;
+            }
+
+        break;    
         
         default:
             break;
@@ -94,9 +134,9 @@ int main()
 }
 
 //Función antirebote del pulsador
-void puls_callback(uint gpio, uint32_t event_mask) {
+/*void puls_callback(uint gpio, uint32_t event_mask) {
     demora = get_systick() + REBOTE_PULS;
-} 
+}*/ 
 
 // Funciones de la bomba
 void bomba_off(){
@@ -111,9 +151,9 @@ void bomba_on(){
 
 //Funcion leer valor de ambos ADC
 void leer_adc(uint32_t* cisterna, uint32_t* tanque) {
-    adc_select_input(1); //Cisterna 
+    adc_select_input(1); 
     *cisterna = adc_read();
-    adc_select_input(0); //Tanque
+    adc_select_input(0);
     *tanque = adc_read();
 }
 
