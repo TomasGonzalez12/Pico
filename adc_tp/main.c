@@ -37,6 +37,8 @@ int main()
                 estado_actual = inicio;
                 break;
             }
+
+            
             
             if (nivel_cis <= nivel_bomba_on){
                 estado_actual = llenar_cisterna;
@@ -62,6 +64,9 @@ int main()
                 break;
             }
 
+            band_prom_tanq = 1;
+            band_prom_cis = 1;
+
             if(nivel_cis < nivel_bomba_on && nivel_tanq >= nivel_max_tanq){
                 estado_actual = llenar_cisterna;
             }
@@ -82,6 +87,9 @@ int main()
                 estado_actual = llenar_tanque;
                 break;
             }
+
+            band_prom_tanq = 1;
+            band_prom_cis = 1;
 
             if((nivel_cis >= nivel_bomba_on) && (nivel_tanq <= nivel_min_tanq)){
                 estado_actual = llenar_tanque;
