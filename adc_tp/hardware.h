@@ -18,7 +18,6 @@
 #define nivel_max_tanq 1740  //aca no va el dato en mV, sino el de la cuenta (mv*4096)/3.3
 #define nivel_min_tanq 465
 #define cap_tanq (nivel_max_tanq - nivel_min_tanq)
-#define nivel_medio_tanq (nivel_min_tanq + cap_tanq/2)
 #define nivel_ledA_on (nivel_min_tanq + cap_tanq/4)
 #define nivel_ledA_off (nivel_min_tanq + cap_tanq * 3/4)
 

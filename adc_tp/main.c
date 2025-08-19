@@ -65,7 +65,7 @@ int main()
             if(nivel_cis < nivel_bomba_on && nivel_tanq >= nivel_max_tanq){
                 estado_actual = llenar_cisterna;
             }
-            else if (nivel_cis >= nivel_bomba_on && (nivel_tanq <= nivel_min_tanq || nivel_tanq <= nivel_medio_tanq) )
+            else if (nivel_cis >= nivel_bomba_on && (nivel_tanq <= nivel_min_tanq) )
             {
                 estado_actual  = llenar_tanque;
             }

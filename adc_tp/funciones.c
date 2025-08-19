@@ -81,20 +81,20 @@ void valor_adc_cisterna(uint32_t* cisterna) {
 
 // Led Amarillo encendido/apagado
 void led_amarillo(uint32_t* tanque){
-    if(*tanque < nivel_ledA_on){
+    if(*tanque <= nivel_ledA_on){
         gpio_put(LEDA_PIN, 1);
     }
-    else if(*tanque > nivel_ledA_off){
+    else if(*tanque >= nivel_ledA_off){
         gpio_put(LEDA_PIN,0);
     }
 }
 
 // Led Rojo encendido/apagado
 void led_rojo(uint32_t* cisterna){
-    if(*cisterna < nivel_ledR_on){
+    if(*cisterna <= nivel_ledR_on){
         gpio_put(LEDR_PIN, 1);
     }
-    else if(*cisterna > nivel_ledR_off){
+    else if(*cisterna >= nivel_ledR_off){
         gpio_put(LEDR_PIN,0);
     }
 }
@@ -108,10 +108,8 @@ void puls_callback(uint gpio, uint32_t event_mask) {
 
     demora = get_systick() + REBOTE_PULS;
     
-    if (demora <= get_systick()) {
-        if(gpio_get(gpio) == 0){
-            bomba_off();
-        }    
-    } 
+    if(gpio_get(gpio) == 0){
+        bomba_off();
+    }     
 } 
 
