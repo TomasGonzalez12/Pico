@@ -17,14 +17,13 @@ typedef enum estado{
     llenar_cisterna
 }estado;
 
-
 int main()
 {
     //Inicializaciones
     init_hardware();
 
     //Configuración del estado inicial del sistema
-    nivel_tanque = 0, nivel_cisterna = 0;
+    uint32_t nivel_tanq = 0, nivel_cis = 0;
     estado estado_actual = inicio;
    
     //Máquina de estados
@@ -32,17 +31,17 @@ int main()
         switch (estado_actual)
         {
         case inicio:
-            if(band_prom_tanque && band_prom_cis){
-                valor_adc_tanque(&nivel_tanque);                                              
-                valor_adc_cisterna(&nivel_cisterna);
+            if(band_prom_tanq && band_prom_cis){
+                valor_adc_tanque(&nivel_tanq);                                              
+                valor_adc_cisterna(&nivel_cis);
                 estado_actual = inicio;
                 break;
             }
             
-            if (nivel_cisterna <= nivel_bomba_on){
+            if (nivel_cis <= nivel_bomba_on){
                 estado_actual = llenar_cisterna;
             }
-            else if ((nivel_cisterna >= nivel_bomba_on) && (nivel_tanque <= nivel_min_tanq)){
+            else if ((nivel_cis >= nivel_bomba_on) && (nivel_tanq <= nivel_min_tanq)){
                 estado_actual = llenar_tanque;
             }
             else{
@@ -53,20 +52,20 @@ int main()
 
         case llenar_cisterna:
             bomba_off();
-            led_amarillo(&nivel_tanque);
-            led_rojo(&nivel_cisterna);
+            led_amarillo(&nivel_tanq);
+            led_rojo(&nivel_cis);
 
-            if(band_prom_tanque && band_prom_cis){
-                valor_adc_tanque(&nivel_tanque);                                              
-                valor_adc_cisterna(&nivel_cisterna);
+            if(band_prom_tanq && band_prom_cis){
+                valor_adc_tanque(&nivel_tanq);                                              
+                valor_adc_cisterna(&nivel_cis);
                 estado_actual = llenar_cisterna;
                 break;
             }
 
-            if(nivel_cisterna < nivel_bomba_on && nivel_tanque >= nivel_max_tanq){
+            if(nivel_cis < nivel_bomba_on && nivel_tanq >= nivel_max_tanq){
                 estado_actual = llenar_cisterna;
             }
-            else if (nivel_cisterna >= nivel_bomba_on && (nivel_tanque <= nivel_min_tanq || nivel_tanque <= nivel_medio_tanq) )
+            else if (nivel_cis >= nivel_bomba_on && (nivel_tanq <= nivel_min_tanq || nivel_tanq <= nivel_medio_tanq) )
             {
                 estado_actual  = llenar_tanque;
             }
@@ -74,20 +73,20 @@ int main()
 
         case llenar_tanque:
             bomba_on();
-            led_amarillo(&nivel_tanque);
-            led_rojo(&nivel_cisterna);
+            led_amarillo(&nivel_tanq);
+            led_rojo(&nivel_cis);
 
-            if(band_prom_tanque && band_prom_cis){
-                valor_adc_tanque(&nivel_tanque);                                              
-                valor_adc_cisterna(&nivel_cisterna);
+            if(band_prom_tanq && band_prom_cis){
+                valor_adc_tanque(&nivel_tanq);                                              
+                valor_adc_cisterna(&nivel_cis);
                 estado_actual = llenar_tanque;
                 break;
             }
 
-            if((nivel_cisterna >= nivel_bomba_on) && (nivel_tanque <= nivel_min_tanq)){
+            if((nivel_cis >= nivel_bomba_on) && (nivel_tanq <= nivel_min_tanq)){
                 estado_actual = llenar_tanque;
             }
-            else if(nivel_cisterna <= nivel_bomba_on && nivel_tanque >= nivel_max_tanq){
+            else if(nivel_cis <= nivel_bomba_on && nivel_tanq >= nivel_max_tanq){
                 estado_actual = llenar_cisterna;
             }
         break;

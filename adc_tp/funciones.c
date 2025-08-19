@@ -41,24 +41,24 @@ void bomba_on(){
     gpio_put(LEDV_PIN, 1);
 }
 
-//Toman el valores adc y saca un promedio 
-tiempo_tanque = 0, cont_tanque = 0, acum_tanque = 0, prom_tanque = 0;
-tiempo_cis = 0, cont_cis = 0, acum_cis = 0, prom_cis = 0;
-uint32_t  band_prom_tanque = 1, band_prom_cis = 1;
+//Funciones para sacar promedio de los valores del adc
+uint32_t tiempo_tanq = 0, cont_tanq = 0, acum_tanq = 0, prom_tanq = 0;
+uint32_t tiempo_cis = 0, cont_cis = 0, acum_cis = 0, prom_cis = 0;
+uint32_t band_prom_tanq = 1, band_prom_cis = 1;
 
 
 void valor_adc_tanque(uint32_t* tanque) {
-    if (get_systick() >= tiempo_tanque) {
-        tiempo_tanque = get_systick() + delay_ms;
+    if (get_systick() >= tiempo_tanq) {
+        tiempo_tanq = get_systick() + delay_ms;
         adc_select_input(0);
-        acum_tanque += adc_read();
-        cont_tanque++;
-        band_prom_tanque = 1;
-        if (cont_tanque == MUESTRAS) {
-            *tanque = acum_tanque / cont_tanque;
-            acum_tanque = 0;
-            cont_tanque = 0;
-            band_prom_tanque = 0;
+        acum_tanq += adc_read();
+        cont_tanq++;
+        band_prom_tanq = 1;
+        if (cont_tanq == MUESTRAS) {
+            *tanque = acum_tanq / cont_tanq;
+            acum_tanq = 0;
+            cont_tanq = 0;
+            band_prom_tanq = 0;
         }
     }
 }

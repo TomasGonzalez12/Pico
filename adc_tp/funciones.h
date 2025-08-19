@@ -2,10 +2,7 @@
 #define FUNCIONES_H
 
 //Variables
-uint32_t nivel_tanque, nivel_cisterna;
-uint32_t tiempo_tanque, cont_tanque, acum_tanque, prom_tanque;
-uint32_t tiempo_cis, cony_cis, acum_cis, prom_cis;
-extern uint32_t band_prom_tanque, band_prom_cis;
+extern uint32_t band_prom_tanq, band_prom_cis;
 
 //Antirebote del pulsador
 void puls_callback(uint gpio, uint32_t event_mask);        //Antirebote y apagado de bomba
