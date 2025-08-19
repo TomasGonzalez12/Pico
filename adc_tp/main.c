@@ -44,8 +44,14 @@ int main()
         switch (estado_actual)
         {
         case llenar_tanque:
-            valor_adc_tanque(&nivel_tanque);                                              
-            valor_adc_cisterna(&nivel_cisterna);
+            extern uint32_t cont_tanque;
+            if(get_cont_tanque() < MUESTRAS){
+                valor_adc_tanque(&nivel_tanque);                                              
+                valor_adc_cisterna(&nivel_cisterna);
+                estado_actual = llenar_tanque;
+                break;
+            }
+            
 
             if((nivel_cisterna >= level_bomba_on) && (nivel_tanque <= nivel_min_sup)){
                 bomba_on();//Bomba y LedV ON
@@ -59,8 +65,13 @@ int main()
         break;
                  
         case llenar_cisterna:
-            valor_adc_tanque(&nivel_tanque);
-            valor_adc_cisterna(&nivel_cisterna);
+            extern uint32_t cont_cis;
+            if(get_cont_cis() < MUESTRAS){
+                valor_adc_tanque(&nivel_tanque);                                              
+                valor_adc_cisterna(&nivel_cisterna);
+                estado_actual = llenar_cisterna;
+                break;
+            }
 
             if(nivel_cisterna < level_bomba_on && nivel_tanque >= nivel_max_sup){
                 bomba_off();

@@ -28,14 +28,10 @@ void init_hardware(){
 
     //Configuración de función callback del pulsador
     gpio_set_irq_enabled_with_callback(PULS_PIN, GPIO_IRQ_EDGE_FALL, true, puls_callback);
+    //Configuración de función callback boton para parar la bomba
+    gpio_set_irq_enabled_with_callback(PULS_PIN, GPIO_IRQ_EDGE_FALL, true, puls_bomba_callback);
 
 }
-
-//Función antirebote del pulsador
-volatile uint32_t demora = 0;
-void puls_callback(uint gpio, uint32_t event_mask) {
-    demora = get_systick() + REBOTE_PULS;
-} 
 
 // Funciones de la bomba
 void bomba_off(){
@@ -59,8 +55,9 @@ void init_adc(uint32_t* tanque, uint32_t* cisterna){
 //Toman el valor de 10 muestras del adc y saca un promedio 
 static uint32_t tiempo_tanque = 0;
 static uint32_t tiempo_cis = 0;
-static uint32_t acum_tanque = 0 , cont_tanque = 0, prom_tanque = 0;
-static uint32_t acum_cis = 0, cont_cis = 0, prom_cis = 0;
+static uint32_t cont_tanque = 0, cont_cis = 0;
+static uint32_t acum_tanque = 0 , prom_tanque = 0;
+static uint32_t acum_cis = 0, prom_cis = 0;
 
 void valor_adc_tanque(uint32_t* tanque) {
     if (get_systick() >= tiempo_tanque) {
@@ -90,6 +87,14 @@ void valor_adc_cisterna(uint32_t* cisterna) {
     }
 }
 
+uint32_t get_cont_tanque(){
+    return cont_tanque;
+}
+
+uint32_t get_cont_cis(){
+    return cont_cis;
+}
+
 // Led Amarillo encendido/apagado
 void led_amarillo(uint32_t* tanque){
     if(*tanque < level_ledA_on){
@@ -110,10 +115,16 @@ void led_rojo(uint32_t* cisterna){
     }
 }
 
+//Función antirebote del pulsador
+volatile uint32_t demora = 0;
+void puls_callback(uint gpio, uint32_t event_mask) {
+    demora = get_systick() + REBOTE_PULS;
+} 
+
 //Pulsador para apagar la bomba
-void puls_bomba(){
+void puls_bomba_callback(uint gpio, uint32_t event_mask){
     if (demora <= get_systick()) {
-        if(gpio_get(PULS_PIN) == 0){
+        if(gpio_get(gpio) == 0){
             bomba_off();
         }    
     }        
