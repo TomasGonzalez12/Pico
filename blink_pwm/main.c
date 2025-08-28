@@ -2,7 +2,6 @@
 #include "pico/stdlib.h"
 #include "systick.h"
 #include "hardware/pwm.h"
-#include <stdbool.h>
 
 #define LED_PIN 16
 #define PULS_PIN 15
@@ -11,17 +10,16 @@
 #define F_PWM 10 //Hz
 #define DUTY 0.5f
 #define F_COUNTER 150000000UL//150MHz
-#define WRAP 65535 //16 bits resolucion
-#define DIV ((float) F_COUNTER/(F_PWM * (WRAP + 1)))
-//#define LEVEL ((uint16_t)(DUTY * (WRAP + 1)))
+#define WRAP 65535 //16 bits resolucion (0 -65535)
+#define DIV ((float) F_COUNTER/(F_PWM * (WRAP + 1))) //229 (0 - 255)
+
 
 typedef enum estados{
     parp_off,
     parp_on
 }estados_t;
 
-volatile uint32_t demora = 0; 
-volatile bool boton_presionado = false;
+volatile uint32_t demora = 0, boton_presionado = 0;
 void puls_callback(uint gpio, uint32_t event_mask); 
 
 uint16_t level;
@@ -59,7 +57,7 @@ int main()
             pwm_set_chan_level(slice_num, PWM_CHAN_A, level);
             
             if(boton_presionado){
-                boton_presionado = false;
+                boton_presionado = 0;
                 estado_actual = parp_on;
             }    
         break;
@@ -69,7 +67,7 @@ int main()
             pwm_set_chan_level(slice_num, PWM_CHAN_A, level);
             
             if(boton_presionado) {
-                boton_presionado = false;
+                boton_presionado = 0;
                 estado_actual = parp_off;
             } 
         break;    
@@ -83,8 +81,11 @@ int main()
 
 void puls_callback(uint gpio, uint32_t event_mask){
     if (gpio == PULS_PIN && event_mask == GPIO_IRQ_EDGE_FALL){
-        if (get_systick() < demora) return;  // Antirrebote
+        if (get_systick() < demora){
+            return;
+        }
+        
         demora = get_systick() + DELAY_PULS;
-        boton_presionado = true; // Señal para el main
+        boton_presionado = 1;
     }
 }
