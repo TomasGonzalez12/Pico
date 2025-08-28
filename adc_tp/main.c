@@ -15,7 +15,7 @@ typedef enum estado{
     inicio,
     llenar_tanque,
     llenar_cisterna
-}estado;
+}estado_t;
 
 int main()
 {
@@ -24,7 +24,7 @@ int main()
 
     //Configuración del estado inicial del sistema
     uint32_t nivel_tanq = 0, nivel_cis = 0;
-    estado estado_actual = inicio;
+    estado_t estado_actual = inicio;
    
     //Máquina de estados
     while(1){
@@ -38,8 +38,9 @@ int main()
                 break;
             }
 
-            
-            
+            band_prom_tanq = 1;
+            band_prom_cis = 1;
+
             if (nivel_cis <= nivel_bomba_on){
                 estado_actual = llenar_cisterna;
             }
