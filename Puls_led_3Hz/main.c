@@ -2,7 +2,7 @@
 #include "pico/stdlib.h"
 #include "systick.h"
 
-#define LED 22
+#define LED 16
 #define BT 15
 #define REBOTE 30
 #define SLEEP 333

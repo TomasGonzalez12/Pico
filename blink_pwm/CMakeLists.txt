@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(blink_pwm main.c )
+add_executable(blink_pwm main.c systick.c)
 
 pico_set_program_name(blink_pwm "blink_pwm")
 pico_set_program_version(blink_pwm "0.1")
@@ -47,7 +47,8 @@ pico_enable_stdio_usb(blink_pwm 0)
 # Add the standard library to the build
 target_link_libraries(blink_pwm
         pico_stdlib 
-        hardware_pwm)
+        hardware_pwm
+        )
 
 # Add the standard include files to the build
 target_include_directories(blink_pwm PRIVATE
