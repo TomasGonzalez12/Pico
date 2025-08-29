@@ -2,8 +2,8 @@
 #define FUNCIONES_H
 
 typedef enum estados{
-    parp_off,
-    parp_on
+    led_off,
+    led_on
 }estados_t;
 
 extern uint16_t level;
