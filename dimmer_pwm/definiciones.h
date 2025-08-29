@@ -6,11 +6,11 @@
 #define PULS_PIN 15
 #define DELAY_PULS 30
 
-#define F_PWM 1 //KHz
+#define F_PWM 1000 //KHz
 #define DUTY 0.5f
 #define F_COUNTER 150000000UL//150MHz
 #define WRAP 4095 //12 bits resolucion (0 - 4095)
-#define DIV ((float) F_COUNTER/(F_PWM * (WRAP + 1))) //2.29 (0 - 255)
+#define DIV ((float) F_COUNTER/(F_PWM * (WRAP + 1))) //36.6 (0 - 255)
 
 
 #endif
