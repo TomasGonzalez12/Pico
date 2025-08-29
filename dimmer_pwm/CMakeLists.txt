@@ -28,37 +28,39 @@ set(PICO_BOARD pico2_w CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(blink_pwm C CXX ASM)
+project(dimmer_pwm C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(blink_pwm main.c systick.c)
+add_executable(dimmer_pwm main.c systick.c funciones.c) 
 
-pico_set_program_name(blink_pwm "blink_pwm")
-pico_set_program_version(blink_pwm "0.1")
+pico_set_program_name(dimmer_pwm "dimmer_pwm")
+pico_set_program_version(dimmer_pwm "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(blink_pwm 1)
-pico_enable_stdio_usb(blink_pwm 0)
+pico_enable_stdio_uart(dimmer_pwm 1)
+pico_enable_stdio_usb(dimmer_pwm 0)
 
 # Add the standard library to the build
-target_link_libraries(blink_pwm
-        pico_stdlib 
+target_link_libraries(dimmer_pwm
+        pico_stdlib
         hardware_pwm
+        hardware_adc
         )
 
 # Add the standard include files to the build
-target_include_directories(blink_pwm PRIVATE
+target_include_directories(dimmer_pwm PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
 # Add any user requested libraries
-target_link_libraries(blink_pwm 
-        
+target_link_libraries(dimmer_pwm 
+        hardware_adc
+        hardware_pwm
         )
 
-pico_add_extra_outputs(blink_pwm)
+pico_add_extra_outputs(dimmer_pwm)
 
