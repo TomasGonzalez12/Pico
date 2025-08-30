@@ -13,6 +13,6 @@
 #define F_LED 2 // Hz
 #define num_wraps (float)(F_PWM / F_LED)  // Número de wraps por ciclo
 #define t_off (uint8_t)roundf((num_wraps / 2.0f))      // 50% duty
-#define t_on num_wraps                      
+#define t_on (uint8_t)num_wraps                      
 
 #endif
