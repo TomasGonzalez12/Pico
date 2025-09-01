@@ -1,7 +1,5 @@
 /*
-Hace parpadear un led a frecuancias entre 1 Hz y 8 HZ (por debajo de las que permite lograr por formula: f_count/div*wrap+1)
-que es de 9 Hz para arriba.
-Para esto usa interrupciones de pwm(por wrap) e interrupciones de boton para que el usuario pare la secuencua y cambie la frecuencia.
+Hace parpadear un led a frecuancias entre 1 Hz y 8Hz usando irq (por wrap), y frecuancias mayores usando la formula (f_pwm = f_count/div*wrap+1)
 */
 
 #include <stdio.h>
