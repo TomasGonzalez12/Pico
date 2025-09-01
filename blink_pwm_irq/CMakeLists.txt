@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(blink_pwm_irq main.c funciones.c )
+add_executable(blink_pwm_irq main.c funciones.c systick.c)
 
 pico_set_program_name(blink_pwm_irq "blink_pwm_irq")
 pico_set_program_version(blink_pwm_irq "0.1")
