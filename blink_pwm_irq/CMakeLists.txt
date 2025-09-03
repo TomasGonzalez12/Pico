@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Initialise pico_sdk from installed location
+# Initialise pico_sdk from instalinput location
 # (note this can come from environment, CMake cache etc)
 
 # == DO NOT EDIT THE FOLLOWING LINES for the Raspberry Pi Pico VS Code Extension to work ==
@@ -48,6 +48,7 @@ pico_enable_stdio_usb(blink_pwm_irq 0)
 target_link_libraries(blink_pwm_irq
         pico_stdlib
         hardware_pwm
+        hardware_adc
         )
 
 # Add the standard include files to the build

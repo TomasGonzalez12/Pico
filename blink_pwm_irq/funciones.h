@@ -13,8 +13,7 @@ extern estados_t estado_actual;
 //Encabezados de funciones
 void init_config(void);
 void puls_callback(uint gpio, uint32_t event_mask);
-void ingresar_fled(void);
-void accion_puls(void);
+void ingresar_frec_input(void);
 void selc_frec_trabajo(void);
 void on_pwm_wrap(void);
 
