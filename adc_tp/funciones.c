@@ -23,8 +23,8 @@ void init_hardware(){
     gpio_put(CTRL_BOMBA, 0);
 
     adc_init();
-    adc_gpio_init(FLOT_BAJO_PIN);
-    adc_gpio_init(FLOT_ALTO_PIN);
+    adc_gpio_init(FLOT_CIS_PIN);
+    adc_gpio_init(FLOT_TANQ_PIN);
 
     //Configuración de función callback del pulsador
     gpio_set_irq_enabled_with_callback(PULS_PIN, GPIO_IRQ_EDGE_FALL, true, puls_callback);
@@ -33,12 +33,13 @@ void init_hardware(){
 // Funciones de la bomba
 void bomba_off(){
     gpio_put(CTRL_BOMBA, 1);
-    gpio_put(LEDV_PIN, 0);
+    gpio_put(LEDV_PIN, 0);    
 }
 
 void bomba_on(){
     gpio_put(CTRL_BOMBA, 0);
     gpio_put(LEDV_PIN, 1);
+    
 }
 
 // Led Amarillo encendido/apagado
@@ -63,6 +64,8 @@ void led_rojo(uint32_t cisterna){
 
 //Función antirebote del pulsador + apagar la bomba
 volatile uint32_t demora = 0;
+volatile bool boton_presionado = false;
+
 void puls_callback(uint gpio, uint32_t event_mask) {
     if(get_systick() < demora){
         return;
@@ -71,7 +74,7 @@ void puls_callback(uint gpio, uint32_t event_mask) {
     demora = get_systick() + REBOTE_PULS;
     
     if(gpio_get(gpio) == 0){
-        bomba_off();
+        boton_presionado = true;
     }     
 } 
 

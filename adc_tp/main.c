@@ -15,7 +15,8 @@ Alumno: González Tomás
 typedef enum estado{
     inicio,
     llenar_tanque,
-    llenar_cisterna
+    llenar_cisterna,
+    boton_emergencia
 }estado_t;
 
 int main()
@@ -25,6 +26,7 @@ int main()
 
     //Configuración del estado inicial del sistema
     bool mediciones_listas = false;
+    volatile bool band_bomba = false;
     estado_t estado_actual = inicio;
     uint32_t nivel_tanque = 0, nivel_cisterna = 0;
    
@@ -45,13 +47,16 @@ int main()
                 nivel_tanque = get_nivel_tanq();
                 nivel_cisterna = get_nivel_cis();
 
-                if (nivel_cisterna <= nivel_bomba_on){
+                if (nivel_cisterna <= nivel_bomba_on && !boton_presionado){
                     estado_actual = llenar_cisterna;
                 }
-                else if ((nivel_cisterna >= nivel_bomba_on) && (nivel_tanque <= nivel_min_tanq)){
+                else if (nivel_cisterna >= nivel_bomba_on && nivel_tanque <= nivel_min_tanq && !boton_presionado){
                     estado_actual = llenar_tanque;
                 }
-                else{
+                else if(boton_presionado){
+                    estado_actual = boton_emergencia;
+                    band_bomba = true;
+                }else{
                     estado_actual = llenar_cisterna;
                 }
             }
@@ -74,12 +79,16 @@ int main()
                 nivel_tanque = get_nivel_tanq();
                 nivel_cisterna = get_nivel_cis();
 
-                if(nivel_cisterna < nivel_bomba_on && nivel_tanque >= nivel_max_tanq){
+                if(nivel_cisterna < nivel_bomba_on && nivel_tanque >= nivel_max_tanq && !boton_presionado){
                     estado_actual = llenar_cisterna;
                 }
-                else if (nivel_cisterna >= nivel_bomba_on && (nivel_tanque <= nivel_min_tanq) )
+                else if (nivel_cisterna >= nivel_bomba_on && nivel_tanque <= nivel_min_tanq && !boton_presionado )
                 {
                     estado_actual  = llenar_tanque;
+                }
+                else if(boton_presionado){
+                    estado_actual = boton_emergencia;
+                    band_bomba = true;
                 }
             }      
         break;
@@ -101,12 +110,31 @@ int main()
                 nivel_tanque = get_nivel_tanq();
                 nivel_cisterna = get_nivel_cis();
 
-                if((nivel_cisterna >= nivel_bomba_on) && (nivel_tanque <= nivel_min_tanq)){
+                if(nivel_cisterna >= nivel_bomba_on && nivel_tanque <= nivel_min_tanq && !boton_presionado){
                     estado_actual = llenar_tanque;
                 }
-                else if(nivel_cisterna <= nivel_bomba_on && nivel_tanque >= nivel_max_tanq){
+                else if(nivel_cisterna <= nivel_bomba_on && nivel_tanque >= nivel_max_tanq && !boton_presionado){
                     estado_actual = llenar_cisterna;
                 }
+                else if(boton_presionado){
+                    estado_actual = boton_emergencia;
+                    band_bomba = true;
+                }
+            }
+        break;
+
+        case boton_emergencia:
+            if(boton_presionado && band_bomba){
+                bomba_off();
+                estado_actual = boton_emergencia;
+                boton_presionado = false;
+                band_bomba = false;
+            }
+
+            if(boton_presionado && !band_bomba){
+                estado_actual = inicio;
+                boton_presionado = false;
+                demora = 0;
             }
         break;
                         
@@ -118,4 +146,3 @@ int main()
     }
 
 }
-

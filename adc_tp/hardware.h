@@ -9,8 +9,8 @@
 
 #define PULS_PIN 18
 #define CTRL_BOMBA 16
-#define FLOT_BAJO_PIN 27 // ADC1 Cisterna
-#define FLOT_ALTO_PIN 26 //ADC0 Tanque
+#define FLOT_CIS_PIN 27 // ADC1 Cisterna
+#define FLOT_TANQ_PIN 26 //ADC0 Tanque
 #define MUESTRAS 10
 #define DELAY_MS 60
 

@@ -8,74 +8,65 @@ Funciones para sacar promedio de los valores del adc
 #include "systick.h"
 #include "promedios.h"
 
-//Variables locales
-static uint32_t tiempo_tanq = 0, cont_tanq = 0, acum_tanq = 0, prom_tanq = 0;
-static uint32_t tiempo_cis = 0, cont_cis = 0, acum_cis = 0, prom_cis = 0;
-static bool band_prom_tanq = false, band_prom_cis = false;
-static uint32_t nivel_tanq = 0, nivel_cis = 0;
+typedef struct{
+    uint32_t tiempo;
+    uint32_t cont;
+    uint32_t acum;
+    uint32_t prom;
+    uint32_t nivel;
+    uint8_t  canal_adc;
+    bool     band_prom;
+}deposito_t;
 
-void valor_adc_tanque(uint32_t* tanque) {
-    if (get_systick() >= tiempo_tanq) {
-        tiempo_tanq = get_systick() + DELAY_MS;
-        adc_select_input(0);
-        acum_tanq += adc_read();
-        cont_tanq++;
-        band_prom_tanq = false;
-        if (cont_tanq == MUESTRAS) {
-            *tanque = acum_tanq / cont_tanq;
-            acum_tanq = 0;
-            cont_tanq = 0;
-            band_prom_tanq = true;
-        }
-    }
-}
+static deposito_t tanque = {.canal_adc = 0};
+static deposito_t cisterna = {.canal_adc = 1};
 
-void valor_adc_cisterna(uint32_t* cisterna) {
-    if (get_systick() >= tiempo_cis) {
-        tiempo_cis = get_systick() + DELAY_MS;
-        adc_select_input(1);
-        acum_cis += adc_read();
-        cont_cis++;
-        band_prom_cis = false;
-        if (cont_cis == MUESTRAS) {
-            *cisterna = acum_cis / cont_cis;
-            acum_cis = 0;
-            cont_cis = 0;
-            band_prom_cis = true;
+void valor_adc_prom(deposito_t* d) {
+    if (get_systick() >= d->tiempo) {
+        d->tiempo = get_systick() + DELAY_MS;
+        adc_select_input(d->canal_adc);
+        d->acum += adc_read();
+        d->cont++;
+        d->band_prom = false;
+        if (d->cont == MUESTRAS) {
+            d->nivel = d->acum / d->cont;
+            d->acum = 0;
+            d->cont = 0;
+            d->band_prom = true;
         }
     }
 }
 
 void get_valores(){
-    valor_adc_cisterna(&nivel_cis);
-    valor_adc_tanque(&nivel_tanq);
+    valor_adc_prom(&cisterna);
+    valor_adc_prom(&tanque);
+}
+
+uint32_t get_nivel_tanq(){
+    return tanque.nivel;
+}
+
+uint32_t get_nivel_cis(){
+    return cisterna.nivel;
 }
 
 bool get_band_prom(){
-    if(!band_prom_cis && !band_prom_tanq){
+    if(!cisterna.band_prom && !tanque.band_prom){
         return false;
     }
 
-    if(band_prom_cis && band_prom_tanq){
+    if(cisterna.band_prom && tanque.band_prom){
         return true;
     }
 }
 
 void reset_banderas(bool banderas){
     if(banderas){
-        band_prom_cis = false;
-        band_prom_tanq = false;
+        cisterna.band_prom = false;
+        tanque.band_prom = false;
     }
     if(!banderas){
-        band_prom_cis = true;
-        band_prom_tanq = true; 
+        cisterna.band_prom = true;
+        tanque.band_prom = true; 
     }
-}
-
-uint32_t get_nivel_tanq(){
-    return nivel_tanq;
-}
-
-uint32_t get_nivel_cis(){
-    return nivel_cis;
 }

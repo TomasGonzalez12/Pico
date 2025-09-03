@@ -1,6 +1,11 @@
 #ifndef FUNCIONES_H
 #define FUNCIONES_H
 
+//Variables globales
+extern volatile uint32_t demora;
+extern volatile bool boton_presionado;
+extern volatile bool band_bomba;
+
 //Antirebote del pulsador
 void puls_callback(uint gpio, uint32_t event_mask);        //Antirebote y apagado de bomba
 
