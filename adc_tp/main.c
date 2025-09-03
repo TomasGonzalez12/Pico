@@ -24,9 +24,9 @@ int main()
     init_hardware();
 
     //Configuración del estado inicial del sistema
-    bool mediciones_listas;
+    bool mediciones_listas = false;
     estado_t estado_actual = inicio;
-    uint32_t nivel_tanque, nivel_cisterna;
+    uint32_t nivel_tanque = 0, nivel_cisterna = 0;
    
     //Máquina de estados
     while(1){
