@@ -21,7 +21,7 @@ typedef struct{
 static deposito_t tanque = {.canal_adc = 0};
 static deposito_t cisterna = {.canal_adc = 1};
 
-void valor_adc_prom(deposito_t* d) {
+static void valor_adc_prom(deposito_t* d) {
     if (get_systick() >= d->tiempo) {
         d->tiempo = get_systick() + DELAY_MS;
         adc_select_input(d->canal_adc);
