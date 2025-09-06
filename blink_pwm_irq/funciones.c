@@ -123,6 +123,7 @@ void config_formula_frec(){
 volatile uint32_t ahora = 0, demora = 0;
 
 void puls_callback(uint gpio, uint32_t event_mask) {
+    gpio_acknowledge_irq(gpio, event_mask);
     ahora = get_systick();
 
     if (ahora < demora) {

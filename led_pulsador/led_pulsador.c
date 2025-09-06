@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 
-#define LED 22
+#define LED 16
 #define BT 15
 
 typedef enum estado_BT{

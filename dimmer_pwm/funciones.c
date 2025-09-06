@@ -43,6 +43,7 @@ volatile bool f_puls = false;
 
 /* Callback de atención de interrupción */
 void puls_callback(uint gpio, uint32_t event_mask) {
+    gpio_acknowledge_irq(gpio, event_mask);
     ahora = get_systick();
 
     if (ahora < demora) {
