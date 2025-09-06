@@ -13,8 +13,7 @@ int main()
 
     //Máquina de estados
     estados_t estado_actual = led_off;
-    
-    
+
     while(1)
     {
         switch (estado_actual)

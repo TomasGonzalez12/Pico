@@ -4,7 +4,7 @@
 #define LED_PIN 16
 #define POTE 26 //ADC0
 #define PULS_PIN 15
-#define DELAY_PULS 30
+#define DELAY_PULS 20
 
 #define F_PWM 1000 //KHz
 #define DUTY 0.5f

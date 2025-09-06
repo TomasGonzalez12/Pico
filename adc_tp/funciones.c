@@ -17,6 +17,7 @@ void init_hardware(){
     gpio_init(PULS_PIN);
     gpio_set_dir(PULS_PIN, GPIO_IN);
     gpio_pull_up(PULS_PIN);
+    gpio_set_input_hysteresis_enabled(LED_PIN, true);
 
     gpio_init(CTRL_BOMBA);
     gpio_set_dir(CTRL_BOMBA, GPIO_OUT);

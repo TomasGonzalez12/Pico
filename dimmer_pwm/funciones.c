@@ -19,6 +19,7 @@ void init_config(){
     gpio_init(PULS_PIN);
     gpio_set_dir(PULS_PIN, GPIO_IN);
     gpio_pull_up(PULS_PIN);
+    gpio_set_input_hysteresis_enabled(LED_PIN, true);
 
     gpio_set_irq_enabled_with_callback(PULS_PIN, GPIO_IRQ_EDGE_FALL, true, puls_callback);
 
