@@ -27,7 +27,7 @@ int main(){
     gpio_put(LED, 0);
     gpio_set_dir(BT, GPIO_IN);
     gpio_pull_up(BT);
-    gpio_set_input_hysteresis_enabled(LED_PIN, true);
+    gpio_set_input_hysteresis_enabled(BT, true);
 
     //Secuencia
      estado_BT estado_actual = suelto_off;

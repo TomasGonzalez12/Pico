@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(parpadeo parpadeo.c )
+add_executable(parpadeo parpadeo.c systick.c)
 
 pico_set_program_name(parpadeo "parpadeo")
 pico_set_program_version(parpadeo "0.1")

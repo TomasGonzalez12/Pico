@@ -19,7 +19,7 @@ void init_config(){
     gpio_init(PULS_PIN);
     gpio_set_dir(PULS_PIN, GPIO_IN);
     gpio_pull_up(PULS_PIN);
-    gpio_set_input_hysteresis_enabled(LED_PIN, true);
+    gpio_set_input_hysteresis_enabled(PULS_PIN, true);
 
     gpio_set_irq_enabled_with_callback(PULS_PIN, GPIO_IRQ_EDGE_FALL, true, puls_callback);
 
@@ -38,16 +38,17 @@ void init_config(){
 }
 
 // Antirebote + delay del boton
-volatile uint32_t demora = 0;
-volatile uint8_t boton_presionado = 0;
+volatile uint32_t ahora = 0, demora = 0;
+volatile bool f_puls = false;
 
-void puls_callback(uint gpio, uint32_t event_mask){
-    if (gpio == PULS_PIN && event_mask == GPIO_IRQ_EDGE_FALL){
-        if (get_systick() < demora){
-            return;
-        }
-        
-        demora = get_systick() + DELAY_PULS;
-        boton_presionado = 1;
+/* Callback de atención de interrupción */
+void puls_callback(uint gpio, uint32_t event_mask) {
+    ahora = get_systick();
+
+    if (ahora < demora) {
+        return;
     }
+
+    f_puls = true;
+    demora = ahora + DELAY_PULS;
 }

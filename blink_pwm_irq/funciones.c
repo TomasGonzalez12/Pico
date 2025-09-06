@@ -35,7 +35,7 @@ void init_config(){
     gpio_init(PULS_PIN);
     gpio_set_dir(PULS_PIN, GPIO_IN);
     gpio_pull_up(PULS_PIN);
-    gpio_set_input_hysteresis_enabled(LED_PIN, true);
+    gpio_set_input_hysteresis_enabled(PULS_PIN, true);
 
     gpio_set_irq_enabled_with_callback(PULS_PIN, GPIO_IRQ_EDGE_FALL, true, puls_callback);
 
@@ -45,8 +45,8 @@ void init_config(){
     adc_select_input(0);
 
     // Configuración de PWM
-    gpio_set_function(input_PIN, GPIO_FUNC_PWM);
-    slice_num = pwm_gpio_to_slice_num(input_PIN);
+    gpio_set_function(LED_PIN, GPIO_FUNC_PWM);
+    slice_num = pwm_gpio_to_slice_num(LED_PIN);
 
     pwm_clear_irq(slice_num);
     pwm_set_irq_enabled(slice_num, true);
@@ -120,17 +120,17 @@ void config_formula_frec(){
 }
 
 //Callback boton
-volatile uint32_t demora = 0;
+volatile uint32_t ahora = 0, demora = 0;
 
 void puls_callback(uint gpio, uint32_t event_mask) {
-    gpio_acknowledge_irq(gpio, event_mask); 
-    if (gpio == PULS_PIN && event_mask == GPIO_IRQ_EDGE_FALL) {
-        // Solo activar si pasó el tiempo de rebote
-        if (get_systick() >= demora) {
-            demora = get_systick() + DELAY_PULS;
-            flag.puls_presionado = true;
-        }
+    ahora = get_systick();
+
+    if (ahora < demora) {
+        return;
     }
+
+    flag.puls_presionado = true;
+    demora = ahora + DELAY_PULS;
 }
 
 //Interrupcion PWM

@@ -22,8 +22,8 @@ int main()
             level = 0;
             pwm_set_chan_level(slice_num, PWM_CHAN_A, level);
             
-            if(boton_presionado){
-                boton_presionado = 0;
+            if(f_puls){
+                f_puls = false;
                 estado_actual = led_on;
             }    
         break;
@@ -32,8 +32,8 @@ int main()
             level = adc_read();
             pwm_set_chan_level(slice_num, PWM_CHAN_A, level);
             
-            if(boton_presionado) {
-                boton_presionado = 0;
+            if(f_puls) {
+                f_puls = false;
                 estado_actual = led_off;
             } 
         break;    

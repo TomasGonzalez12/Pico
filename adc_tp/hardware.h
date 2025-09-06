@@ -12,7 +12,7 @@
 #define FLOT_CIS_PIN 27 // ADC1 Cisterna
 #define FLOT_TANQ_PIN 26 //ADC0 Tanque
 #define MUESTRAS 10
-#define DELAY_MS 60
+#define DELAY_MS 20
 
 // Tanque
 #define nivel_max_tanq 1740  //aca no va el dato en mV, sino el de la cuenta (mv*4096)/3.3

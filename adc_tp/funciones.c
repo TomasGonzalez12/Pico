@@ -17,7 +17,7 @@ void init_hardware(){
     gpio_init(PULS_PIN);
     gpio_set_dir(PULS_PIN, GPIO_IN);
     gpio_pull_up(PULS_PIN);
-    gpio_set_input_hysteresis_enabled(LED_PIN, true);
+    gpio_set_input_hysteresis_enabled(PULS_PIN ,true);
 
     gpio_init(CTRL_BOMBA);
     gpio_set_dir(CTRL_BOMBA, GPIO_OUT);
@@ -63,19 +63,19 @@ void led_rojo(uint32_t cisterna){
     }
 }
 
-//Función antirebote del pulsador + apagar la bomba
-volatile uint32_t demora = 0;
+// Antirebote + delay del boton
+volatile uint32_t ahora = 0, demora = 0;
 volatile bool boton_presionado = false;
 
+/* Callback de atención de interrupción */
 void puls_callback(uint gpio, uint32_t event_mask) {
-    if(get_systick() < demora){
+    ahora = get_systick();
+
+    if (ahora < demora) {
         return;
     }
 
-    demora = get_systick() + REBOTE_PULS;
-    
-    if(gpio_get(gpio) == 0){
-        boton_presionado = true;
-    }     
-} 
+    boton_presionado = true;
+    demora = ahora + DELAY_MS;
+}
 

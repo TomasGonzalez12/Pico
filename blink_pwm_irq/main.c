@@ -34,7 +34,6 @@ int main() {
             pwm_set_enabled(slice_num, false);
             pwm_clear_irq(slice_num);
             ingresar_frec_input();
-            sleep_ms(100);
             pwm_set_enabled(slice_num, true);                  
         }
 

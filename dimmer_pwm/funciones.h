@@ -9,7 +9,7 @@ typedef enum estados{
 extern uint16_t level;
 extern uint slice_num;
 
-extern volatile uint8_t boton_presionado;
+extern volatile bool f_puls;
 void puls_callback(uint gpio, uint32_t event_mask); 
 
 void init_config(void);
