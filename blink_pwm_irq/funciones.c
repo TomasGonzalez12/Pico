@@ -120,18 +120,23 @@ void config_formula_frec(){
 }
 
 //Callback boton
-volatile uint32_t ahora = 0, demora = 0;
+volatile uint32_t ahora = 0, ventana = 0;
 
 void puls_callback(uint gpio, uint32_t event_mask) {
-    gpio_acknowledge_irq(gpio, event_mask);
     ahora = get_systick();
 
-    if (ahora < demora) {
+    if (ahora < ventana) {
         return;
     }
 
     flag.puls_presionado = true;
-    demora = ahora + DELAY_PULS;
+    ventana = ahora + DELAY_PULS;
+}
+
+void reset_var_puls(){
+    flag.puls_presionado = false;
+    ahora = 0;
+    ventana = 0;
 }
 
 //Interrupcion PWM

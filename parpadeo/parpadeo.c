@@ -40,6 +40,5 @@ int main()
 }
 
 void puls_callback(uint gpio, uint32_t event_mask) {
-    gpio_acknowledge_irq(gpio, event_mask);
     demora = get_systick() + DELAY_BT;
 }

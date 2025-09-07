@@ -1,7 +1,7 @@
 /*
-Genera un pwm con un rango de frecuencias de  1Hz - 36.6kHz, que el usuario puede elegir por consola.
-Para frecuancias entre 1 Hz y 144Hz implementa una irq (por wrap), 
-y entre 154Hz a 36.6k por formula (f_pwm = f_count/div*wrap+1).
+La salida es un pwm con un rango de frecuencias de  1Hz - 36.6kHz, que el usuario puede elegir por consola.
+Para frecuancias entre 1 Hz y 143Hz implementa una irq (por wrap), 
+y entre 144Hz a 36.6k por formula (f_pwm = f_count/div*wrap+1).
 El valor máximo está limitado por la resolución del adc (4096) y el valor máximo de div (255).
 Para variar el brillo en frecuencias bajas (1 - 143 Hz) con el potenciometro solo se puede ajustando el 
 nivel primero y luego presionar el boton para ajustar la nueva frecuencia. Para frecuencias mayores se puede usar el
@@ -27,10 +27,9 @@ int main() {
 
     while(1){
         if(flag.puls_presionado){
-            flag.puls_presionado = false;
+            reset_var_puls();
             flag.config_irq_frec_ok = false;
             flag.config_formula_frec_ok = false;
-            demora = 0;
             pwm_set_enabled(slice_num, false);
             pwm_clear_irq(slice_num);
             ingresar_frec_input();

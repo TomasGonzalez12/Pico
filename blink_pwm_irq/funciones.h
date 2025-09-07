@@ -28,7 +28,7 @@ extern uint slice_num;
 extern uint32_t level;
 extern float div;
 
-extern volatile uint32_t demora;
+extern volatile uint32_t ahora, ventana;
 
 typedef struct{
     uint32_t f_pwm;
@@ -46,6 +46,7 @@ extern volatile uint32_t wrap_cont;
 //Encabezados de funciones
 void init_config(void);
 void puls_callback(uint gpio, uint32_t event_mask);
+void reset_var_puls();
 void ingresar_frec_input(void);
 void config_irq_frec(void);
 void config_formula_frec(void);
