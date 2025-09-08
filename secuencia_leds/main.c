@@ -9,6 +9,13 @@
 #include "definiciones.h"
 #include "funciones.h"
 
+typedef enum{
+    rojo_on,
+    amarillo_on,
+    verde_on,
+    boton_pres
+}estados_e;
+
 int main()
 {
     init_config();
