@@ -22,7 +22,6 @@ int main()
 
     //Estado inicial
     estados_e estado_actual = boton_pres;
-    uint32_t lapso = SLEEP;
 
     //Máquina de estados
     while(1){
