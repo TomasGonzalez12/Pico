@@ -9,21 +9,17 @@
 typedef enum{
     inicio,
     progre,
-    regre,
-    boton_pres
-}estados_s;
+    regre
+}estados_e;
+estados_e estado_actual = inicio;
 
+uint32_t cont = 0;
+uint32_t ventanaP1 = 0;
+bool f_blink = false;
 
 int main()
 {
     init_config();
-    uint slice_num = pwm_gpio_to_slice_num(BUZZER); //lo vuelvo a definir para salvar el error de compilacion que me da
-
-    //Estado inicial
-    uint32_t cont = 0;
-    uint32_t lapso1, lapso2;
-    uint32_t dato;
-    estados_s estado_actual = inicio;
     
     //Maquina de estados
     while(1){
@@ -31,77 +27,72 @@ int main()
         {
         case inicio:
             cont = 0;
-            estado_actual = boton_pres;
-            if(f_puls1){
-                f_puls1 = false;
-                estado_actual = boton_pres;
-            }
-        break;
-
-        case boton_pres:
-            if(f_puls1){
-                if(lapso1 < SLEEP ){
-                    pwm_set_enabled(slice_num, true);
-                    lapso1++;
-                    break;
-                }
-                f_puls1 = false;
-                lapso1 = 0;
-                pwm_set_enabled(slice_num, false);
-                estado_actual= progre;
-            }else if (f_puls2){
-                if(lapso2 < SLEEP ){
-                    pwm_set_enabled(slice_num, true);
-                    lapso2++;
-                    break;
-                }
-                f_puls2 = false;
-                lapso2 = 0;
-                pwm_set_enabled(slice_num, false);
-                estado_actual = inicio;
-            }
+            ventanaP1 = 0;
+            gpio_clr_mask(bcd_mask);
+            estado_actual = progre;
         break;
 
         case progre:
-            if(f_puls1){
-                if(cont > 0 && cont <= 9 && !f_puls2){
-                    f_puls1 = false;
-                    display_digito(&cont);
-                    cont++;
-                    estado_actual = progre;
-            }
-            else if(cont > 0 && cont == 9 && !f_puls2){
-                f_puls1 = false;
-                estado_actual = regre;
-            }else if(f_puls2){
-                f_puls2 = false;
+            if(f_reset){
+                f_reset = false;
                 estado_actual = inicio;
             }
+
+            if(f_blink){
+                if(get_systick() - ventanaP1 >= SLEEP){
+                    gpio_put(BUZZER, 0);
+                    f_blink = false;
+                }    
+            }
+
+            if(f_puls1){
+                f_puls1 = false;
+                if(cont >= 0 && cont <= 9 && !f_reset){
+                    gpio_put(BUZZER, 1);
+                    display_digito(&cont);
+                    ventanaP1 = get_systick();
+                    f_blink = true;
+                    cont++;
+
+                    if(cont > 0 && cont > 9 && !f_reset){  
+                        cont = 8;
+                        estado_actual = regre;
+                    }
+                }
             }
             
 
         break;
 
         case regre:
-            if(f_puls1){
-                if(cont < 0 && cont == 9 && !f_puls2){
-                f_puls1 = false;
-                cont--;
-                display_digito(&cont);
-            }
-            else if( cont == 0 && !f_puls2){
-                estado_actual = progre;
-            }else if(f_puls2){
-                f_puls2 = false;
+            if(f_reset){
+                f_reset = false;
                 estado_actual = inicio;
             }
+
+            if(f_blink){
+                if(get_systick() - ventanaP1 >= SLEEP){
+                    gpio_put(BUZZER, 0);
+                    f_blink = false;
+                }    
+            }
+
+            if(f_puls1){
+                f_puls1 = false;
+                if(cont >= 0 && cont <= 9 && !f_reset){
+                    gpio_put(BUZZER, 1);
+                    display_digito(&cont);
+                    ventanaP1 = get_systick();
+                    f_blink = true;
+                    cont--;
+
+                    if(cont == 0 && !f_reset){
+                        estado_actual = progre;
+                    }
+                }
             }
         break;
-        
-        default:
-        break;
         }
-
     }
     
 }

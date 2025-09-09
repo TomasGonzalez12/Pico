@@ -2,9 +2,11 @@
 #define FUNCIONES_H
 
 //Variables globales
-extern volatile bool f_puls1, f_puls2;
+extern uint32_t bcd_mask;
+extern volatile bool f_puls1, f_reset;
 extern uint32_t cont;
-extern uint32_t dato;
+extern uint32_t ventanaP1;
+extern bool f_blink;
 extern uint slice_num;
 
 //Funciones

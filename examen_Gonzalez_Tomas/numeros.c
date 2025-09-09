@@ -15,18 +15,21 @@ void put_uno(){
     COFF;
     DOFF;
 }
+
 void put_dos(){
     AOFF;
     BON;
     COFF;
     DOFF;
 }
+
 void put_tres(){
     AON;
     BON;
     COFF;
     DOFF;
 }
+
 void put_cuatro(){
     AOFF;
     BOFF;
@@ -39,24 +42,28 @@ void put_cinco(){
     CON;
     DOFF;
 }
+
 void put_seis(){
     AOFF;
     BON;
     CON;
     DOFF;
 }
+
 void put_siete(){
     AON;
     BON;
     CON;
     DOFF;
 }
+
 void put_ocho(){
     AOFF;
     BOFF;
     COFF;
     DON;
 }
+
 void put_nueve(){
     AON;
     BOFF;

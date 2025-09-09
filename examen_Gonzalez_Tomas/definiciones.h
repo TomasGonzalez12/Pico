@@ -3,9 +3,9 @@
 
 //BCD
 #define A_PIN 16
-#define B_PIN 17
-#define C_PIN 18
-#define D_PIN 19
+#define B_PIN 18
+#define C_PIN 20
+#define D_PIN 21
 
 #define AON gpio_put(A_PIN, 1)
 #define BON gpio_put(B_PIN, 1)
@@ -26,18 +26,18 @@
 
 
 //BOTONES
-#define PULS1_PIN 14
-#define PULS2_PIN 15
-#define DELAY_MS  30
+#define RESET_PIN 14
+#define PULS1_PIN 15
+#define DELAY_MS  100
 
 
 //BUZZER
-#define BUZZER 22
+#define BUZZER 12
 #define F_BUZZ 1000
 #define F_COUNTER 150000000UL//150MHz
 #define WRAP 65535 //16 bits resolucion (0 - 65535)
 #define LEVEL WRAP/2
-#define DIV ((float) F_COUNTER/(F_BUZZ * (WRAP + 1))) //36.6 (0 - 255)
-#define SLEEP 250
+#define DIV ((float) F_COUNTER/(F_BUZZ * (WRAP + 1))) // (0 - 255)
+#define SLEEP 200
 
 #endif
