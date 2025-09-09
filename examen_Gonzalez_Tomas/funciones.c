@@ -93,7 +93,6 @@ void display_digito(uint32_t* dato){
 }
 
 //Callback
-/*
 volatile uint32_t ahora, ventana;
 volatile bool f_puls1 = false, f_reset = false;
 
@@ -110,31 +109,5 @@ void puls_callback(uint gpio, uint32_t event_mask){
         f_reset = true;
     }
 }
-*/
-volatile uint32_t ahora;
-volatile uint32_t ventana_puls1 = 0;
-volatile uint32_t ventana_reset = 0;
 
-volatile bool f_puls1 = false;
-volatile bool f_reset = false;
-
-#define DEBOUNCE_MS 30  // o el valor que mejor te funcione
-
-void puls_callback(uint gpio, uint32_t event_mask){
-    ahora = get_systick();
-
-    if (gpio == PULS1_PIN && event_mask == GPIO_IRQ_EDGE_FALL) {
-        if (ahora - ventana_puls1 >= DEBOUNCE_MS) {
-            f_puls1 = true;
-            ventana_puls1 = ahora;
-        }
-    }
-
-    if (gpio == RESET_PIN && event_mask == GPIO_IRQ_EDGE_FALL) {
-        if (ahora - ventana_reset >= DEBOUNCE_MS) {
-            f_reset = true;
-            ventana_reset = ahora;
-        }
-    }
-}
 
