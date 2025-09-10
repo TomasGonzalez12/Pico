@@ -17,14 +17,6 @@
 #define COFF gpio_put(C_PIN, 0)
 #define DOFF gpio_put(D_PIN, 0)
 
-/*
-#define AON gpio_put(A_PIN, ((dato & 1) ? 1 : 0 ))
-#define BON gpio_put(B_PIN, ((dato & 2) ? 1 : 0 ))
-#define CON gpio_put(C_PIN, ((dato & 4) ? 1 : 0 ))
-#define DON gpio_put(D_PIN, ((dato & 8) ? 1 : 0 ))
-*/
-
-
 //BOTONES
 #define RESET_PIN 14
 #define PULS1_PIN 15
