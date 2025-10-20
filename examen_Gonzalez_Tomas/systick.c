@@ -6,7 +6,7 @@ volatile uint32_t u32_tick_count;
 
 void init_systick(void) {
     systick_hw->csr = 0; 	    //Disable 
-    systick_hw->rvr = 149999UL; //Standard System clock (125Mhz)/ (rvr value + 1) = 1ms 
+    systick_hw->rvr = 149999UL; //Standard System clock (150hz)/ (rvr value + 1) = 1ms 
     systick_hw->csr = 0x7;      //Enable Systic, Enable Exceptions	
 }
 
