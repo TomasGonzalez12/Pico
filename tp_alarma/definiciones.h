@@ -30,6 +30,6 @@
 #define DIV             ((float) F_COUNTER/(F_PWM * (WRAP + 1)))
 
 //ADC BATERIA
-#define BAT_5V          (26) //ADC0 Tanque
-#define BAT_12V         (27) // ADC1 Cisterna
+#define BAT_5V          (26) //ADC0 
+#define BAT_12V         (27) // ADC1 
 #define MUESTRAS        (10) // por si hacemos promedio de muestras

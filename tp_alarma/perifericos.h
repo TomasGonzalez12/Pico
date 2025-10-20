@@ -19,7 +19,12 @@ typedef struct{
 
 typedef struct{
     uint8_t id;
-    uint16_t carga;
+    uint8_t canal_adc;
+    uint16_t carga; //hacer la triquiñuela con el adc
 }bateria_t;
+/*en main o donde corrsponda inicializar
+bateria_t bat_5V = {.id = BAT_5V, .canal_adc = 0};
+bateria_t bat_12V = {.id = BAT_12V, .canal_adc = 1};
+*/
 
 #endif
