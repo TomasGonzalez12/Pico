@@ -24,32 +24,35 @@ set(PICO_BOARD pico2_w CACHE STRING "Board type")
 # Import SDK
 include(pico_sdk_import.cmake)
 
-project(picow_ble_led C CXX ASM)
+project(ble_alarma C CXX ASM)
 
 pico_sdk_init()
 
-add_executable(picow_ble_led
+add_subdirectory(oled)
+
+add_executable(ble_alarma
     server.c
 )
 
 # IMPORTANTE: El directorio debe incluirse ANTES de linkear las bibliotecas
-target_include_directories(picow_ble_led PRIVATE
+target_include_directories(ble_alarma PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
-target_link_libraries(picow_ble_led
+target_link_libraries(ble_alarma
     pico_stdlib
     pico_btstack_ble
     pico_btstack_cyw43
     pico_cyw43_arch_none
     hardware_gpio
+    oled
 )
 
 # Generate .h from .gatt
-pico_btstack_make_gatt_header(picow_ble_led PRIVATE "${CMAKE_CURRENT_LIST_DIR}/led_control.gatt")
+pico_btstack_make_gatt_header(ble_alarma PRIVATE "${CMAKE_CURRENT_LIST_DIR}/alarma_control.gatt")
 
 # Enable USB output
-pico_enable_stdio_usb(picow_ble_led 1)
-pico_enable_stdio_uart(picow_ble_led 0)
+pico_enable_stdio_usb(ble_alarma 1)
+pico_enable_stdio_uart(ble_alarma 1)
 
-pico_add_extra_outputs(picow_ble_led)
+pico_add_extra_outputs(ble_alarma)
