@@ -1,37 +1,36 @@
+# Generated Cmake Pico project file
+
 cmake_minimum_required(VERSION 3.13)
 
-# === CONFIGURACIÓN BÁSICA ===
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# === CONFIGURACIÓN PICO ===
+# Initialise pico_sdk from installed location
+# (note this can come from environment, CMake cache etc)
+
+# == DO NOT EDIT THE FOLLOWING LINES for the Raspberry Pi Pico VS Code Extension to work ==
+if(WIN32)
+    set(USERHOME $ENV{USERPROFILE})
+else()
+    set(USERHOME $ENV{HOME})
+endif()
+set(sdkVersion 2.2.0)
+set(toolchainVersion 14_2_Rel1)
+set(picotoolVersion 2.2.0-a4)
+set(picoVscode ${USERHOME}/.pico-sdk/cmake/pico-vscode.cmake)
+if (EXISTS ${picoVscode})
+    include(${picoVscode})
+endif()
+# ====================================================================================
 set(PICO_BOARD pico2_w CACHE STRING "Board type")
 
-# Configurar SDK path explícitamente (EVITA BUCLE)
-set(PICO_SDK_PATH "C:/Users/tomas/.pico-sdk/sdk/2.2.0" CACHE PATH "Pico SDK path" FORCE)
-message(STATUS "Using Pico SDK: ${PICO_SDK_PATH}")
+# Pull in Raspberry Pi Pico SDK (must be before project)
+include(pico_sdk_import.cmake)
 
-# Importar SDK - IMPORTANTE: version simple
-if(NOT DEFINED PICO_SDK_PATH)
-    set(PICO_SDK_PATH "$ENV{PICO_SDK_PATH}")
-    if(NOT PICO_SDK_PATH)
-        set(PICO_SDK_PATH "C:/Users/tomas/.pico-sdk/sdk/2.2.0")
-    endif()
-endif()
+project(ble_alarma2 C CXX ASM)
 
-# Verificar que existe el archivo de importación
-if(EXISTS "${PICO_SDK_PATH}/external/pico_sdk_import.cmake")
-    include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
-elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/pico_sdk_import.cmake")
-    include(pico_sdk_import.cmake)
-else()
-    message(FATAL_ERROR "No se encontró pico_sdk_import.cmake")
-endif()
-
-project(ble_alarma C CXX ASM)
-
-# Inicializar SDK
+# Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # === CONFIGURACIÓN PARA EVITAR BUCLE ===
@@ -41,20 +40,26 @@ set(CMAKE_SUPPRESS_REGENERATION ON)
 # === SUBDIRECTORIOS ===
 add_subdirectory(oled)
 
-# === EJECUTABLE PRINCIPAL ===
-add_executable(ble_alarma
-    server.c
-)
+# Add executable. Default name is the project name, version 0.1
 
-# === INCLUDE DIRECTORIES ===
-target_include_directories(ble_alarma PRIVATE
+add_executable(ble_alarma2 server.c )
+
+pico_set_program_name(ble_alarma2 "ble_alarma2")
+pico_set_program_version(ble_alarma2 "0.1")
+
+# Modify the below lines to enable/disable output over UART/USB
+pico_enable_stdio_uart(ble_alarma2 0)
+pico_enable_stdio_usb(ble_alarma2 0)
+
+# Add the standard include files to the build
+target_include_directories(ble_alarma2 PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
     # Incluir directorio oled si es necesario
     ${CMAKE_CURRENT_LIST_DIR}/oled
 )
 
-# === LINK LIBRARIES ===
-target_link_libraries(ble_alarma
+# Add the standard library to the build
+target_link_libraries(ble_alarma2
     pico_stdlib
     pico_btstack_ble
     pico_btstack_cyw43
@@ -64,17 +69,17 @@ target_link_libraries(ble_alarma
 )
 
 # === GENERAR .h DESDE .gatt ===
-pico_btstack_make_gatt_header(ble_alarma PRIVATE 
+pico_btstack_make_gatt_header(ble_alarma2 PRIVATE 
     "${CMAKE_CURRENT_LIST_DIR}/alarma_control.gatt"
 )
 
-# === HABILITAR STDIO ===
-pico_enable_stdio_usb(ble_alarma 1)
-pico_enable_stdio_uart(ble_alarma 0)  # Deshabilitar UART si no usas
 
-# === SALIDAS ADICIONALES ===
-pico_add_extra_outputs(ble_alarma)
+# Add any user requested libraries
+target_link_libraries(ble_alarma2 
+        
+        )
 
-# === FINAL: PREVENIR RE-EJECUCIÓN ===
-# Esta línea al final evita que CMake se re-ejecute
-set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY CMAKE_CONFIGURE_DEPENDS "")
+pico_add_extra_outputs(ble_alarma2)
+
+
+
